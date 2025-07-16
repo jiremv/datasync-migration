@@ -1,4 +1,4 @@
-package com.cloud.migration,handler
+package com.cloud.migration.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
@@ -39,3 +39,50 @@ public class DatasyncMigrationHandler implements RequestHandler<S3Event, String>
 
             // Descargar archivo de S3
             Path tempFile = downloadFromS3(s3Bucket, s3Key, context);
+
+            // Subir archivo a GCS
+            uploadToGCS(tempFile, s3Key, context);
+
+            return "Archivo transferido exitosamente: " + s3Key;
+
+        } catch (Exception e) {
+            context.getLogger().log("ERROR: " + e.getMessage());
+            return "Error transfiriendo archivo a GCS";
+        }
+    }
+
+    private Path downloadFromS3(String bucket, String key, Context context) throws Exception {
+        S3Object s3Object = s3Client.getObject(bucket, key);
+        InputStream inputStream = s3Object.getObjectContent();
+
+        Path tempFile = Paths.get("/tmp/" + key.replace("/", "_"));
+        OutputStream outputStream = new FileOutputStream(tempFile.toFile());
+
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        inputStream.close();
+        outputStream.close();
+
+        context.getLogger().log("Archivo descargado desde S3 a " + tempFile.toString());
+        return tempFile;
+    }
+
+    private void uploadToGCS(Path filePath, String destinationName, Context context) throws Exception {
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId(gcpProjectId)
+                .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(gcpCredentialsPath)))
+                .build()
+                .getService();
+
+        BlobId blobId = BlobId.of(gcsBucket, destinationName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+
+        storage.create(blobInfo, Files.readAllBytes(filePath));
+
+        context.getLogger().log("Archivo subido a GCS: gs://" + gcsBucket + "/" + destinationName);
+    }
+}
