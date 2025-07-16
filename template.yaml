@@ -14,26 +14,61 @@ Resources:
   SourceBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: your-source-s3-bucket  # Cambia este nombre si ya existe
+      BucketName: your-source-s3-bucket
 
-  S3ToGCSFunction:
-    Type: AWS::Serverless::Function
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
     Properties:
-      FunctionName: datasync-migration-function
-      Handler: com.cloud.migration.handler.DatasyncMigrationHandler::handleRequest
-      CodeUri: .
-      Role: arn:aws:iam::123456789012:role/LambdaExecutionRole
-      Environment:
-        Variables:
-          gcsBucket: your-gcs-bucket
-          projectId: your-gcp-project-id
-          secretName: your-aws-secretsmanager-secret-name
-      Events:
-        S3UploadTrigger:
-          Type: S3
-          Properties:
-            Bucket: !Ref SourceBucket
-            Events: s3:ObjectCreated:*
+      RoleName: LambdaExecutionRoleForS3ToGCS
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaS3GCSAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub arn:aws:s3:::${SourceBucket}
+                  - !Sub arn:aws:s3:::${SourceBucket}/*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: "*"   # Puedes restringir al secreto específico
+
+S3ToGCSFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    FunctionName: datasync-migration-function
+    Handler: com.cloud.migration.handler.DatasyncMigrationHandler::handleRequest
+    CodeUri: .
+    Role: !GetAtt LambdaExecutionRole.Arn   # <- ESTE ES EL CAMBIO CORRECTO
+    Environment:
+      Variables:
+        gcsBucket: your-gcs-bucket
+        projectId: your-gcp-project-id
+        secretName: your-aws-secretsmanager-secret-name
+    Events:
+      S3UploadTrigger:
+        Type: S3
+        Properties:
+          Bucket: !Ref SourceBucket
+          Events: s3:ObjectCreated:*
+
 
 Outputs:
 
