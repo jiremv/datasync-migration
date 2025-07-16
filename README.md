@@ -2,7 +2,9 @@
 
 ## Descripción
 
-Este proyecto implementa una **función AWS Lambda en Java 21** que transfiere archivos cargados en un bucket S3 directamente hacia un bucket de **Google Cloud Storage (GCS)**. El flujo es 100% serverless, sin intervención manual.
+Este proyecto implementa una **función AWS Lambda en Java 21**, que transfiere archivos cargados en un bucket S3 directamente hacia un bucket de **Google Cloud Storage (GCS)**. El flujo es 100% serverless, sin intervención manual.
+
+Toda la infraestructura es gestionada como **IaC (Infraestructura como Código)** mediante AWS SAM, incluyendo la creación automática del bucket S3.
 
 ---
 
@@ -16,8 +18,8 @@ Este proyecto implementa una **función AWS Lambda en Java 21** que transfiere a
            │ Evento: s3:ObjectCreated
            ▼
 ┌──────────────────────┐
-│   AWS S3 Bucket      │
-│ (S3SourceBucket)     │
+│ AWS S3 Bucket (IaC)  │
+│ (se crea automáticamente) │
 └──────────┬───────────┘
            │
            ▼

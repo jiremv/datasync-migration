@@ -23,12 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DatasyncMigrationHandler implements RequestHandler<S3Event, String> {
-
     private final AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
     private final String gcsBucket = System.getenv("gcsBucket");
     private final String gcpProjectId = System.getenv("projectId");
     private final String gcpCredentialsPath = "/tmp/gcp-service-account.json";
-
     @Override
     public String handleRequest(S3Event event, Context context) {
         try {

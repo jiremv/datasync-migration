@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
-Description: Lambda Java function to transfer files from AWS S3 to Google Cloud Storage.
+Description: Lambda Java 21 function to transfer files from AWS S3 to Google Cloud Storage.
 
 Globals:
   Function:
@@ -11,21 +11,36 @@ Globals:
 
 Resources:
 
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: your-source-s3-bucket  # Cambia este nombre si ya existe
+
   S3ToGCSFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: s3togcs-java
-      Handler: com.cloud.migration,handler.DatasyncMigrationHandler::handleRequest
+      FunctionName: datasync-migration-function
+      Handler: com.cloud.migration.handler.DatasyncMigrationHandler::handleRequest
       CodeUri: .
-      Role: arn:aws:iam::123456789012:role/LambdaExecutionRole  # Reemplaza con tu ARN real
+      Role: arn:aws:iam::123456789012:role/LambdaExecutionRole
       Environment:
         Variables:
-          gcsBucket: your-gcs-bucket-name
+          gcsBucket: your-gcs-bucket
           projectId: your-gcp-project-id
           secretName: your-aws-secretsmanager-secret-name
       Events:
         S3UploadTrigger:
           Type: S3
           Properties:
-            Bucket: your-source-s3-bucket
+            Bucket: !Ref SourceBucket
             Events: s3:ObjectCreated:*
+
+Outputs:
+
+  LambdaFunctionName:
+    Description: Nombre de la función Lambda
+    Value: !Ref S3ToGCSFunction
+
+  S3BucketName:
+    Description: Nombre del bucket S3 creado automáticamente
+    Value: !Ref SourceBucket
