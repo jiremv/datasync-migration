@@ -50,6 +50,7 @@ Para desplegar y utilizar esta solución necesitas:
 - Crear buckets S3.
 - Crear funciones Lambda.
 - Definir roles IAM.
+- Crear secretos en AWS Secrets Manager.
 
 ### ✅ Permisos en GCP para:
 
@@ -164,6 +165,34 @@ Esto creará automáticamente el bucket de destino en Google Cloud Storage (GCS)
 | `gcsBucket`  | Nombre del bucket destino en Google Cloud.                                                          |
 | `projectId`  | ID del proyecto de Google Cloud.                                                                    |
 | `secretName` | Nombre del secreto en AWS Secrets Manager (contiene las credenciales JSON del Service Account GCP). |
+
+---
+
+## Gestión del secreto (AWS Secrets Manager)
+
+### 1⃣ Crear el secreto:
+
+```bash
+aws secretsmanager create-secret \
+    --name gcp-service-account-json \
+    --description "Credenciales JSON GCP para Lambda" \
+    --secret-string file://ruta/a/tu/gcp-service-account.json
+```
+
+Asigna el nombre del secreto a la variable de entorno `secretName`.
+
+### 2⃣ Recuperar el secreto desde Lambda (código Java):
+
+```java
+AWSSecretsManager client = AWSSecretsManagerClientBuilder.defaultClient();
+
+GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest()
+    .withSecretId(System.getenv("secretName"));
+
+GetSecretValueResult getSecretValueResult = client.getSecretValue(getSecretValueRequest);
+
+String jsonCredentials = getSecretValueResult.getSecretString();
+```
 
 ---
 
