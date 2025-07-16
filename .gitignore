@@ -1,0 +1,42 @@
+# Maven y Quarkus
+/target/
+/.mvn/
+/.idea/
+*.iml
+*.class
+*.log
+
+# Archivos generados por IDEs
+*.swp
+*~
+.DS_Store
+*.bak
+*.tmp
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VSCode
+.vscode/
+
+# Sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archivos de Quarkus específicos
+*.jar
+*.original
+.quarkus/
+
+# Archivos temporales de build
+build/
+out/
+
+echo "target/" >> .gitignore
+echo "*.jar" >> .gitignore
+echo "*.class" >> .gitignore
+echo "*.log" >> .gitignore
+echo "*.zip" >> .gitignore

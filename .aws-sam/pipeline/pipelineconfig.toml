@@ -1,0 +1,23 @@
+version = 0.1
+[default.pipeline_bootstrap.parameters]
+oidc_provider_url = "https://token.actions.githubusercontent.com"
+oidc_client_id = "sts.amazonaws.com"
+github_org = "jiremv"
+github_repo = "datasync-migration"
+deployment_branch = "main"
+oidc_provider = "github-actions"
+permissions_provider = "OpenID Connect (OIDC)"
+
+[datasync-migration-dev.pipeline_bootstrap.parameters]
+pipeline_execution_role = "arn:aws:iam::545200407638:role/aws-sam-cli-managed-datasync--PipelineExecutionRole-1BybAn7jkWZR"
+cloudformation_execution_role = "arn:aws:iam::545200407638:role/aws-sam-cli-managed-datas-CloudFormationExecutionRo-wOjNxiehsQrp"
+artifacts_bucket = "aws-sam-cli-managed-datasync-migra-artifactsbucket-9daccehczgfd"
+image_repository = ""
+region = "us-east-1"
+
+[datasync-migration-prod.pipeline_bootstrap.parameters]
+pipeline_execution_role = "arn:aws:iam::545200407638:role/aws-sam-cli-managed-datasync--PipelineExecutionRole-LKwlXtTRgi4L"
+cloudformation_execution_role = "arn:aws:iam::545200407638:role/aws-sam-cli-managed-datas-CloudFormationExecutionRo-wOlrh8Hxl2kc"
+artifacts_bucket = "aws-sam-cli-managed-datasync-migra-artifactsbucket-1sdqdpmuv3xr"
+image_repository = ""
+region = "us-east-2"
