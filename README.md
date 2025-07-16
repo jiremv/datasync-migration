@@ -218,5 +218,5 @@ Cada vez que subes un archivo al bucket S3:
 
 ## Contacto
 
-Proyecto desarrollado como prueba técnica de arquitectura multicloud AWS ↔ GCP.
-
+Paul Rivera.
+AWS Certified Solutions Architect - Associate

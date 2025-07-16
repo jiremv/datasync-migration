@@ -50,25 +50,24 @@ Resources:
                   - secretsmanager:GetSecretValue
                 Resource: "*"   # Puedes restringir al secreto específico
 
-S3ToGCSFunction:
-  Type: AWS::Serverless::Function
-  Properties:
-    FunctionName: datasync-migration-function
-    Handler: com.cloud.migration.handler.DatasyncMigrationHandler::handleRequest
-    CodeUri: .
-    Role: !GetAtt LambdaExecutionRole.Arn   # <- ESTE ES EL CAMBIO CORRECTO
-    Environment:
-      Variables:
-        gcsBucket: your-gcs-bucket
-        projectId: your-gcp-project-id
-        secretName: your-aws-secretsmanager-secret-name
-    Events:
-      S3UploadTrigger:
-        Type: S3
-        Properties:
-          Bucket: !Ref SourceBucket
-          Events: s3:ObjectCreated:*
-
+  S3ToGCSFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: datasync-migration-function
+      Handler: com.cloud.migration.handler.DatasyncMigrationHandler::handleRequest
+      CodeUri: .
+      Role: !GetAtt LambdaExecutionRole.Arn   # <- ESTE ES EL CAMBIO CORRECTO
+      Environment:
+        Variables:
+          gcsBucket: your-gcs-bucket
+          projectId: your-gcp-project-id
+          secretName: your-aws-secretsmanager-secret-name
+      Events:
+        S3UploadTrigger:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
 
 Outputs:
 
