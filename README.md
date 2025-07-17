@@ -1,4 +1,4 @@
-# DataSync Migration Lambda - AWS S3 to Google Cloud Storage
+# Data Migration Lambda - AWS S3 to Google Cloud Storage
 
 ## Descripción
 
