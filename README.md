@@ -1,4 +1,4 @@
-# Data Migration Lambda - AWS S3 to Google Cloud Storage
+# Data Ingest Lambda - AWS S3 to Google Cloud Storage
 
 ## Descripción
 
