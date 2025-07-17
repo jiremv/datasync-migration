@@ -8,6 +8,8 @@ Este proyecto implementa una **función AWS Lambda en Java 21**, que transfiere 
 
 ## Arquitectura
 
+![img.png](img.png)
+
 ```plaintext
 ┌────────────────────────────────────┐
 │   Usuario / Sistema   │
